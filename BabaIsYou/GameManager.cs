@@ -44,6 +44,7 @@ namespace BabaIsYou {
         #region properties
 
         public List<Tile> CurrPlayer { get { return _currPlayer; } } // 현재 플레이어 타일
+        public RuleManager RuleManager { get; set; }
 
         #endregion // properties
 
@@ -72,6 +73,14 @@ namespace BabaIsYou {
 
         public void SetPlayer(List<Tile> player) {
             _currPlayer = player;
+        }
+
+        public void ClearPlayer() {
+            _currPlayer = null; // 플레이어 초기화
+        }
+
+        public void UpdateRules() {
+            RuleManager.CheckRules();
         }
 
         #endregion // public funcs

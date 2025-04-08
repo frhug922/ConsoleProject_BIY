@@ -16,44 +16,50 @@ namespace BabaIsYou {
 
     class Tile {
         private TileType _type;
-        private char _symbol;
+        private bool _isPushable;
+        protected char _symbol;
 
         public TileType TileType { get { return _type; } }
-        public bool IsPushable { get; private set; }
+        public bool IsPushable { get { return _isPushable; } set { _isPushable = value; } }
         public char Symbol { get { return _symbol; } }
         public int X { get; set; }
         public int Y { get; set; }
 
         public Tile(TileType type, int x, int y, bool isPushable = false) {
+            _type = type;
             X = x;
             Y = y;
-            SetTile(type, isPushable);
+            _isPushable = isPushable;
+            SetTile(type);
         }
 
-        public void SetTile(TileType type, bool isPushable = false) {
-            _type = type;
-            IsPushable = isPushable;
-
-            // 타입에 따른 심볼 설정
-            switch (type) {
-                case TileType.Baba:
-                    _symbol = 'B';
-                    break;
-                case TileType.Push:
-                    _symbol = 'O';
-                    break;
-                case TileType.Rule:
-                    _symbol = 'R';
-                    break;
-                case TileType.Wall:
-                    _symbol = '#';
-                    break;
-                case TileType.Empty:
-                default:
-                    _symbol = '.';
-                    break;
+        public void SetTile(TileType type) {
+            if (TileType.Baba == type) {
+                _symbol = 'B';
+            }
+            else if (TileType.Push == type) {
+                _symbol = 'O';
+            }
+            else if (TileType.Wall == type) {
+                _symbol = '#';
+            }
+            else {
+                _symbol = '.';
             }
         }
     }
 
+    class RuleTile : Tile {
+        public string RuleText { get; private set; }
+
+        public RuleTile(string ruleText, int x, int y) : base(TileType.Rule, x, y, true) {
+            RuleText = ruleText;
+            this._symbol = this.RuleText[0]; // 룰 타일의 첫 글자를 심볼로 사용
+        }
+
+        public void SetRule(string newRule) {
+            RuleText = newRule;
+        }
+    }
 }
+

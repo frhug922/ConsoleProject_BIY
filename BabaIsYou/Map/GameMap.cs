@@ -20,6 +20,8 @@ namespace BabaIsYou {
         #region properties
 
         public Tile[,] Map { get; private set; }
+        public int Width { get { return _width; } }
+        public int Height { get { return _height; } }
 
         #endregion // properties
 
@@ -34,6 +36,7 @@ namespace BabaIsYou {
                 //_height = 18;
                 _width = level1.GetLength(0);
                 _height = level1.GetLength(1);
+                InitializeMap(level1);
             }
             else if (level == 2) {
                 //_width = 24;
@@ -51,9 +54,6 @@ namespace BabaIsYou {
                 //_width = 33;
                 //_height = 18;
             }
-            Map = new Tile[_width, _height];
-
-            InitializeMap(level);
         }
 
         public void Move(Vector2 direction) {
@@ -141,6 +141,23 @@ namespace BabaIsYou {
         public void PrintMap() {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
+                    if (Map[x, y].TileType == TileType.Rule) {
+                        if (Map[x, y].Symbol == 'B') {
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                        }
+                        else if (Map[x, y].Symbol == 'I') {
+                            Console.BackgroundColor = ConsoleColor.White;
+                        }
+                        else if (Map[x, y].Symbol == 'Y') {
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                        }
+                        else if (Map[x, y].Symbol == 'S') {
+                            //TODO
+                        }
+                    }
+                    else {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    }
                     Console.Write(Map[x, y].Symbol + " ");
                 }
                 Console.WriteLine();
@@ -155,65 +172,38 @@ namespace BabaIsYou {
 
         #region // private funcs
 
-        private void InitializeMap(int level) {
-            //for (int y = 0; y < _height; y++) {
-            //    for (int x = 0; x < _width; x++) {
-            //        Map[x, y] = new Tile(TileType.Empty, x, y); // 기본적으로 빈 타일
-            //    }
-            //}
-
-            //// TODO 레벨 별 다른 맵 형태.
-            ////Map[2, 2] = new BabaTile();
-            ////Map[3, 3] = new WallTile();
-            ////Map[4, 4] = new PushableTile();
-            ////Map[1, 1] = new RuleTile("B");
-
-            //Map[2, 2].SetTile(TileType.Baba);
-            //Map[3, 3].SetTile(TileType.Push, true);
-            //Map[4, 4].SetTile(TileType.Push, false);
-
-            //GameManager.Instance.SetPlayer(FindTileFromType(TileType.Baba));
+        private void InitializeMap(string[,] level) {
+            _height = level.GetLength(0);
+            _width = level.GetLength(1);
+            Map = new Tile[_width, _height];
 
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
-                    char tileChar = level1[y, x]; // 문자 기반 데이터에서 가져오기
-                    Tile newTile;
+                    string tileStr = level[y, x];
 
-                    switch (tileChar) {
-                        case 'B':
-                            newTile = new Tile(TileType.Baba, x, y);
-                            break;
-                        case '#':
-                            newTile = new Tile(TileType.Wall, x, y, false); // 벽 (밀 수 없음)
-                            break;
-                        case 'O':
-                            newTile = new Tile(TileType.Push, x, y, true); // 오브젝트 (밀 수 있음)
-                            break;
-                        case 'R':
-                            newTile = new Tile(TileType.Rule, x, y, true); // 룰 (밀 수 있음)
-                            break;
-                        default:
-                            newTile = new Tile(TileType.Empty, x, y);
-                            break;
+                    if (string.IsNullOrEmpty(tileStr)) {
+                        Map[x, y] = new Tile(TileType.Empty, x, y); // 빈 타일
                     }
-
-                    Map[x, y] = newTile;
-                }
-            }
-            GameManager.Instance.SetPlayer(FindTileFromType(TileType.Baba));
-        }
-
-        private List<Tile> FindTileFromType(TileType tileType) {
-            List<Tile> tiles = new List<Tile>();
-            for (int y = 0; y < _height; y++) {
-                for (int x = 0; x < _width; x++) {
-                    if (Map[x, y].TileType == tileType) {
-                        tiles.Add(Map[x, y]);
+                    else if (tileStr == "#") {
+                        Map[x, y] = new Tile(TileType.Wall, x, y); // 벽 (밀 수 없음)
+                    }
+                    else if (tileStr == "O") {
+                        Map[x, y] = new Tile(TileType.Push, x, y); // 오브젝트 (못밂)
+                    }
+                    else if (tileStr == "B") {
+                        Map[x, y] = new Tile(TileType.Baba, x, y); // 바바
+                    }
+                    else if (tileStr == "BABA" || tileStr == "IS" || tileStr == "YOU") {
+                        Map[x, y] = new RuleTile(tileStr, x, y); // 룰 타일
+                    }
+                    else {
+                        Console.WriteLine($"알 수 없는 타일: {tileStr} at ({x},{y})");
+                        Map[x, y] = new Tile(TileType.Empty, x, y);
                     }
                 }
             }
-            return tiles;
         }
+
 
         #endregion // private funcs
 
@@ -223,12 +213,21 @@ namespace BabaIsYou {
 
         #region // Map Data
 
-        char[,] level1 = {
-            { '.', '.', '.', '.', '.' },
-            { '.', 'O', 'O', 'O', '.' },
-            { '.', 'O', 'B', 'O', '.' },
-            { '.', '#', 'R', '#', '.' },
-            { '.', '.', '.', '.', '.' }};
+        //char[,] level1 = {
+        //    { 'R', 'R', 'R', '.', '.' },
+        //    { '.', '.', '.', '.', '.' },
+        //    { '.', '.', 'B', '.', '.' },
+        //    { '.', '#', '.', '#', '.' },
+        //    { '.', '.', '.', '.', '.' }};
+
+
+
+        string[,] level1 = {
+            { "", "", "", "", "" },
+            { "BABA", "IS", "YOU", "", "" },
+            { "", "", "", "", "" },
+            { "B", "", "", "", "" },
+            { "", "", "#", "O", "" }};
 
         #endregion // Map Data
     }

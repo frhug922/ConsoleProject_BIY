@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameManager.cs" />
+    <Compile Include="RuleManager.cs" />
     <Compile Include="Scene\03.GameScene.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Program.cs" />
