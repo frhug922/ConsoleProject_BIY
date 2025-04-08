@@ -94,7 +94,21 @@ namespace BabaIsYou {
                 }
             }
 
-            // 2️⃣ 이동 로직
+            // 이동 우선순위 설정
+            if (direction.Y > 0) {
+                movableTiles = movableTiles.OrderByDescending(t => t.Y).ToList(); // 아래로 이동 시 Y가 큰 순서
+            }
+            else if (direction.Y < 0) {
+                movableTiles = movableTiles.OrderBy(t => t.Y).ToList(); // 위로 이동 시 Y가 작은 순서
+            }
+            else if (direction.X > 0) {
+                movableTiles = movableTiles.OrderByDescending(t => t.X).ToList(); // 오른쪽 이동 시 X가 큰 순서
+            }
+            else if (direction.X < 0) {
+                movableTiles = movableTiles.OrderBy(t => t.X).ToList(); // 왼쪽 이동 시 X가 작은 순서
+            }
+
+            // 이동 로직
             foreach (Tile tile in movableTiles) {
                 int newX = tile.X + direction.X;
                 int newY = tile.Y + direction.Y;
@@ -106,12 +120,12 @@ namespace BabaIsYou {
                 Tile targetTile = Map[newX, newY].Count > 0 ? Map[newX, newY].Peek() : null;
 
                 // STOP 오브젝트인지 확인
-                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
+                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP") || targetTile.Name == tile.Name) {
                     continue;
                 }
 
                 // PUSH 오브젝트인지 확인
-                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "PUSH")) {
+                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "PUSH") || targetTile.TileType == TileType.Rule) {
                     List<Tile> pushTiles = new List<Tile>();
                     int checkX = newX, checkY = newY;
 
@@ -273,7 +287,7 @@ namespace BabaIsYou {
 
         string[,] level1 = {
             // 1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "BABA", "IS", "YOU", }, // 1
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "ROCK", "IS", "YOU", }, // 1
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 2
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 3
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 4
