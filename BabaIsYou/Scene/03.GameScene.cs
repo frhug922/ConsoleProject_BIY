@@ -10,7 +10,6 @@ namespace BabaIsYou {
 
         private string stageNumber; // 선택된 스테이지 번호
         private GameMap gameMap;
-        private RuleManager rulemanager;
 
         #endregion // private fields
 
@@ -38,13 +37,6 @@ namespace BabaIsYou {
         public override void Render() {
             Console.SetCursorPosition(0, 0);
             Console.WriteLine($"=== Stage {stageNumber} ===");
-
-            //for (int y = 0; y < gameMap.Map.GetLength(0); y++) {
-            //    for (int x = 0; x < gameMap.Map.GetLength(1); x++) {
-            //        Console.Write(gameMap.Map[y, x]);
-            //    }
-            //    Console.WriteLine();
-            //}
             gameMap.PrintMap();
         }
 
@@ -104,8 +96,6 @@ namespace BabaIsYou {
             else {
                 throw new ArgumentException("Invalid stage number");
             }
-            rulemanager = new RuleManager(gameMap);
-            GameManager.Instance.UpdateRules();
         }
 
         private void ConfirmExit() {

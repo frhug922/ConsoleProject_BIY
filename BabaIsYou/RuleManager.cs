@@ -5,67 +5,117 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BabaIsYou {
-    class RuleManager {
-        private Tile[,] _map;
-        private int _width, _height;
+    public class RuleManager {
+        #region static fields
 
-        public RuleManager(GameMap map) {
-            _map = map.Map;
-            _width = map.Width;
-            _height = map.Height;
+        private static RuleManager _instance = null;
 
-            GameManager.Instance.RuleManager = this;
+        public static RuleManager Instance {
+            get {
+                if (_instance == null)
+                    _instance = new RuleManager();
+                return _instance;
+            }
         }
 
-        public void CheckRules() {
-            List<Tile> ruleTiles = new List<Tile>();
+        public RuleManager() {
+            _instance = this;
+        }
 
-            // 1. 모든 Rule 타일 찾기
-            for (int y = 0; y < _height; y++) {
-                for (int x = 0; x < _width; x++) {
-                    if (_map[x, y].TileType == TileType.Rule) {
-                        ruleTiles.Add(_map[x, y]);
-                    }
+        #endregion // static fields
+
+
+
+
+
+        #region private fields
+
+        private List<Rule> activeRules = new List<Rule>(); // 현재 활성화된 규칙 목록
+
+        #endregion // private fields
+
+
+
+
+
+        #region public funcs
+
+        /// <summary>
+        /// 규칙 추가 ex : "BABA IS YOU"
+        /// </summary>
+        /// <param name="subject">"BABA"</param>
+        /// <param name="verb">"IS"</param>
+        /// <param name="attribute">"YOU"</param>
+        public void AddRule(string subject, string verb, string attribute) {
+            activeRules.Add(new Rule(subject, verb, attribute));
+        }
+
+        /// <summary>
+        /// 규칙 제거 ex : "BABA IS YOU"
+        /// </summary>
+        /// <param name="subject">"BABA"</param>
+        /// <param name="verb">"IS"</param>
+        /// <param name="attribute">"YOU"</param>
+        public void RemoveRule(string subject, string verb, string attribute) {
+            activeRules.RemoveAll(rule => rule.Subject == subject && rule.Verb == verb && rule.Attribute == attribute);
+        }
+
+        /// <summary>
+        /// 규칙 HasRule 확인 ex : "BABA IS YOU"
+        /// </summary>
+        /// <param name="subject">"BABA"</param>
+        /// <param name="verb">"IS"</param>
+        /// <param name="predicate">"YOU"</param>
+        /// <returns>true / false</returns>
+        public bool HasRule(string subject, string verb, string attribute) {
+            Dictionary<string, string> nameMappings = new Dictionary<string, string> {
+                { "#", "WALL" },
+                { "B", "BABA" },
+                { "O", "ROCK" }};
+
+            if (nameMappings.ContainsKey(subject)) {
+                subject = nameMappings[subject];
+            }
+
+            return activeRules.Any(rule =>
+                rule.Subject == subject &&
+                rule.Verb == verb &&
+                rule.Attribute == attribute
+            );
+        }
+
+        /// <summary>
+        /// 활성화된 규칙 목록 중 "YOU" 규칙을 가진 string 목록을 반환
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetControlledObjects() {
+            List<string> controlledObjects = new List<string>();
+
+            foreach (var rule in activeRules) {
+                if (rule.Verb == "IS" && rule.Attribute == "YOU") {
+                    controlledObjects.Add(rule.Subject);
                 }
             }
 
-            // 2. "Baba Is You" 확인
-            foreach (Tile tile in ruleTiles) {
-                if (tile.Symbol == 'B') {
-                    Tile isTile = FindTileAt(tile.X + 1, tile.Y, 'I');
-                    Tile youTile = FindTileAt(tile.X + 2, tile.Y, 'Y');
-
-                    if (isTile != null && youTile != null) {
-                        Console.WriteLine("Baba Is You 규칙이 활성화됨!");
-                        GameManager.Instance.SetPlayer(FindTileFromType(TileType.Baba));
-                        return;
-                    }
-                }
-            }
-
-            // "Baba Is You" 없으면 플레이어 없음
-            Console.WriteLine("Baba Is You 규칙이 없어서 플레이어가 없음!");
-            GameManager.Instance.ClearPlayer();
+            return controlledObjects;
         }
 
-        private List<Tile> FindTileFromType(TileType tileType) {
-            List<Tile> tiles = new List<Tile>();
-            for (int y = 0; y < _height; y++) {
-                for (int x = 0; x < _width; x++) {
-                    if (_map[x, y].TileType == tileType) {
-                        tiles.Add(_map[x, y]);
-                    }
-                }
-            }
-            return tiles;
+        public void ClearRules() {
+            activeRules.Clear();
         }
 
-        private Tile FindTileAt(int x, int y, char symbol) {
-            if (x >= 0 && x < _width && y >= 0 && y < _height) {
-                Tile tile = _map[x, y];
-                if (tile.Symbol == symbol) return tile;
-            }
-            return null;
+        #endregion // public funcs
+    }
+
+    public class Rule {
+        public string Subject { get; private set; }
+        public string Verb { get; private set; }
+        public string Attribute { get; private set; }
+
+        public Rule(string subject, string verb, string attribute) {
+            Subject = subject;
+            Verb = verb;
+            Attribute = attribute;
         }
     }
 }

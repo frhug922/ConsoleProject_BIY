@@ -32,102 +32,22 @@ namespace BabaIsYou {
         #region public fields
         public GameMap(int level) {
             if (level == 1) {
-                //_width = 33;
-                //_height = 18;
                 _width = level1.GetLength(0);
                 _height = level1.GetLength(1);
                 InitializeMap(level1);
             }
             else if (level == 2) {
-                //_width = 24;
-                //_height = 18;
+                // TODO 레벨 별 다른 맵 적용
             }
             else if (level == 3) {
-                //_width = 33; // TODO 레벨 별로 다른 맵 사이즈
-                //_height = 18;
+
             }
             else if (level == 4) {
-                //_width = 33;
-                //_height = 18;
+
             }
             else if (level == 5) {
-                //_width = 33;
-                //_height = 18;
+
             }
-        }
-
-        public void Move(Vector2 direction) {
-            // 1. 현재 바바의 위치 찾기
-            List<Tile> playerTiles = GameManager.Instance.CurrPlayer;
-
-            if (playerTiles.Count == 0) {
-                Console.WriteLine("플레이어가 존재하지 않습니다!");
-                return;
-            }
-
-            Tile playerTile = playerTiles[0]; // 현재는 바바가 하나라고 가정
-            int currentX = playerTile.X;
-            int currentY = playerTile.Y;
-
-            // 2. 이동할 새로운 좌표 계산
-            int newX = currentX + (int)direction.X;
-            int newY = currentY + (int)direction.Y;
-
-            // 3. 맵 범위 검사
-            if (newX < 0 || newX >= _width || newY < 0 || newY >= _height) {
-                return;
-            }
-
-            // 4. 이동할 위치의 타일 가져오기
-            Tile targetTile = Map[newX, newY];
-
-            // 5. 이동 가능 여부 체크
-            if (!targetTile.IsPushable && targetTile.TileType != TileType.Empty) {
-                return;
-            }
-
-            // 6. 밀 수 있는 타일들을 리스트로 저장
-            List<Tile> pushTiles = new List<Tile>();
-            int checkX = newX;
-            int checkY = newY;
-
-            while (checkX >= 0 && checkX < _width && checkY >= 0 && checkY < _height) {
-                Tile checkTile = Map[checkX, checkY];
-
-                if (!checkTile.IsPushable) {
-                    break; // 밀 수 없는 타일이 나오면 종료
-                }
-
-                pushTiles.Add(checkTile);
-                checkX += (int)direction.X;
-                checkY += (int)direction.Y;
-            }
-
-            // 7. 밀리는 타일의 끝부분이 맵을 벗어나면 이동 불가
-            if (checkX < 0 || checkX >= _width || checkY < 0 || checkY >= _height) {
-                return;
-            }
-
-            // 8. 밀리는 타일의 끝부분이 빈 공간이 아니라면 이동 불가
-            if (Map[checkX, checkY].TileType != TileType.Empty) {
-                return;
-            }
-
-            // 9. 모든 밀리는 타일을 이동
-            for (int i = pushTiles.Count - 1; i >= 0; i--) {
-                Tile pushTile = pushTiles[i];
-                int moveX = pushTile.X + (int)direction.X;
-                int moveY = pushTile.Y + (int)direction.Y;
-                Map[moveX, moveY] = pushTile;
-                pushTile.X = moveX;
-                pushTile.Y = moveY;
-            }
-
-            // 10. 플레이어 이동
-            Map[newX, newY] = playerTile;
-            Map[currentX, currentY] = new Tile(TileType.Empty, currentX, currentY);
-            playerTile.X = newX;
-            playerTile.Y = newY;
         }
 
         #endregion // public fields
@@ -138,27 +58,123 @@ namespace BabaIsYou {
 
         #region // public funcs
 
+        public void Move(Vector2 direction) {
+            List<string> controlledObjects = RuleManager.Instance.GetControlledObjects(); // 현재 조작 가능한 오브젝트들 가져오기
+
+            if (controlledObjects.Count == 0) {
+                return; // 조작할 오브젝트가 없으면 아무 일도 안 함
+            }
+
+            // 먼저, 움직일 수 있는 타일들을 찾음
+            List<Tile> movableTiles = new List<Tile>();
+
+            for (int i = 0; i < controlledObjects.Count; i++) {
+                for (int y = 0; y < _height; y++) {
+                    for (int x = 0; x < _width; x++) {
+                        Tile tile = Map[x, y];
+
+                        if (tile.TileType == TileType.Rule) {
+                            continue; // 룰 타일은 무시
+                        }
+
+                        // 조작 가능한 오브젝트에 따라 타일을 추가
+                        if (controlledObjects.Contains("BABA") && tile.Name == "B") {
+                            movableTiles.Add(tile); // "B" 타일을 움직일 수 있음
+                        }
+                        else if (controlledObjects.Contains("ROCK") && tile.Name == "O") {
+                            movableTiles.Add(tile); // "O" 타일을 움직일 수 있음
+                        }
+                        else if (controlledObjects.Contains("WALL") && tile.Name == "#") {
+                            movableTiles.Add(tile); // 벽도 움직일 수 있도록 처리
+                        }
+                        else if (controlledObjects.Contains("FLAG") && tile.Name == "F") {
+                            movableTiles.Add(tile); // "F" (플래그)도 움직일 수 있도록 처리
+                        }
+                    }
+                }
+            }
+
+            // 이동을 시도하는 로직
+            foreach (Tile tile in movableTiles) {
+                int newX = tile.X + direction.X;
+                int newY = tile.Y + direction.Y;
+
+                if (!IsInBounds(newX, newY)) {
+                    continue; // 맵 밖으로 나가면 이동하지 않음
+                }
+
+                Tile targetTile = Map[newX, newY];
+
+                // Stop 오브젝트인지 확인
+                if (RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
+                    continue;
+                }
+
+                // PUSH 오브젝트인지 확인
+                if (RuleManager.Instance.HasRule(targetTile.Name, "IS", "PUSH")) {
+                    List<Tile> pushTiles = new List<Tile>(); // 밀릴 타일들을 저장
+                    int checkX = newX, checkY = newY;
+
+                    // 연쇄적으로 밀릴 수 있는지 확인
+                    while (IsInBounds(checkX, checkY)) {
+                        Tile checkTile = Map[checkX, checkY];
+
+                        if (checkTile.TileType == TileType.Empty) {
+                            break; // 빈 공간을 만나면 밀 수 있음
+                        }
+
+                        if (!RuleManager.Instance.HasRule(checkTile.Name, "IS", "PUSH")) {
+                            pushTiles.Clear(); // 밀 수 없는 타일을 만나면 전체 취소
+                            break;
+                        }
+
+                        pushTiles.Add(checkTile);
+                        checkX += direction.X;
+                        checkY += direction.Y;
+                    }
+
+                    // 밀릴 공간이 없으면 이동 취소
+                    if (pushTiles.Count == 0 || !IsInBounds(checkX, checkY)) {
+                        continue;
+                    }
+
+                    // 밀기 수행 (역순으로 처리하여 마지막부터 밀어야 함)
+                    for (int i = pushTiles.Count - 1; i >= 0; i--) {
+                        Tile pushTile = pushTiles[i];
+                        int moveX = pushTile.X + direction.X;
+                        int moveY = pushTile.Y + direction.Y;
+
+                        Map[moveX, moveY] = pushTile;
+                        pushTile.SetPosition(moveX, moveY);
+                    }
+
+                    // 원래 움직이려던 타일도 이동
+                    Map[newX, newY] = tile;
+                    tile.SetPosition(newX, newY);
+                    Map[tile.X, tile.Y] = new Tile(TileType.Empty, tile.X, tile.Y, ".");
+                }
+                else {
+                    // 그냥 이동 가능하면 이동
+                    Map[newX, newY] = tile;
+                    tile.SetPosition(newX, newY);
+                    Map[tile.X, tile.Y] = new Tile(TileType.Empty, tile.X, tile.Y, ".");
+                }
+            }
+
+            UpdateRules();
+        }
+
+
         public void PrintMap() {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
                     if (Map[x, y].TileType == TileType.Rule) {
-                        if (Map[x, y].Symbol == 'B') {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                        }
-                        else if (Map[x, y].Symbol == 'I') {
-                            Console.BackgroundColor = ConsoleColor.White;
-                        }
-                        else if (Map[x, y].Symbol == 'Y') {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                        }
-                        else if (Map[x, y].Symbol == 'S') {
-                            //TODO
-                        }
+                        // TODO 룰 타일 배경 색깔 변경
                     }
                     else {
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
-                    Console.Write(Map[x, y].Symbol + " ");
+                    Console.Write(Map[x, y].Name.First() + " ");
                 }
                 Console.WriteLine();
             }
@@ -181,29 +197,70 @@ namespace BabaIsYou {
                 for (int x = 0; x < _width; x++) {
                     string tileStr = level[y, x];
 
-                    if (string.IsNullOrEmpty(tileStr)) {
-                        Map[x, y] = new Tile(TileType.Empty, x, y); // 빈 타일
+                    if (string.IsNullOrEmpty(tileStr) || tileStr == ".") { // 빈 타일
+                        Map[x, y] = new Tile(TileType.Empty, x, y, ".");
                     }
-                    else if (tileStr == "#") {
-                        Map[x, y] = new Tile(TileType.Wall, x, y); // 벽 (밀 수 없음)
-                    }
-                    else if (tileStr == "O") {
-                        Map[x, y] = new Tile(TileType.Push, x, y); // 오브젝트 (못밂)
-                    }
-                    else if (tileStr == "B") {
-                        Map[x, y] = new Tile(TileType.Baba, x, y); // 바바
-                    }
-                    else if (tileStr == "BABA" || tileStr == "IS" || tileStr == "YOU") {
-                        Map[x, y] = new RuleTile(tileStr, x, y); // 룰 타일
+                    else if (tileStr == "#" || tileStr == "B" || tileStr == "O" || tileStr == "F") { // 오브젝트 타일. 추후 생기면 추가해야함.
+                        Map[x, y] = new Tile(TileType.Object, x, y, tileStr);
                     }
                     else {
-                        Console.WriteLine($"알 수 없는 타일: {tileStr} at ({x},{y})");
-                        Map[x, y] = new Tile(TileType.Empty, x, y);
+                        Map[x, y] = new Tile(TileType.Rule, x, y, tileStr);
+                    }
+                }
+            }
+
+            UpdateRules();
+        }
+
+        public void UpdateRules() {
+            RuleManager.Instance.ClearRules(); // 기존 규칙 초기화
+
+            for (int y = 0; y < _height; y++) {
+                for (int x = 0; x < _width; x++) {
+                    Tile tile = Map[x, y];
+
+                    if (tile.TileType == TileType.Rule) {
+                        TryAddRule(x, y); // 규칙 추가 시도
                     }
                 }
             }
         }
 
+        private void TryAddRule(int x, int y) {
+            // 가로 방향 규칙 추가 (예: BABA IS YOU)
+            if (IsInBounds(x + 2, y)) {
+                Tile first = Map[x, y];
+                Tile second = Map[x + 1, y];
+                Tile third = Map[x + 2, y];
+
+                if (second.Name == "IS" && IsValidSubject(first.Name) && IsValidAttribute(third.Name)) {
+                    RuleManager.Instance.AddRule(first.Name, second.Name, third.Name);
+                }
+            }
+
+            // 세로 방향 규칙 추가 (예: ROCK IS PUSH)
+            if (IsInBounds(x, y + 2)) {
+                Tile first = Map[x, y];
+                Tile second = Map[x, y + 1];
+                Tile third = Map[x, y + 2];
+
+                if (second.Name == "IS" && IsValidSubject(first.Name) && IsValidAttribute(third.Name)) {
+                    RuleManager.Instance.AddRule(first.Name, second.Name, third.Name);
+                }
+            }
+        }
+
+        private bool IsInBounds(int x, int y) {
+            return x >= 0 && x < _width && y >= 0 && y < _height;
+        }
+
+        private bool IsValidSubject(string name) {
+            return name == "BABA" || name == "ROCK" || name == "WALL" || name == "FLAG";
+        }
+
+        private bool IsValidAttribute(string name) {
+            return name == "YOU" || name == "PUSH" || name == "STOP" || name == "WIN";
+        }
 
         #endregion // private funcs
 
@@ -213,21 +270,26 @@ namespace BabaIsYou {
 
         #region // Map Data
 
-        //char[,] level1 = {
-        //    { 'R', 'R', 'R', '.', '.' },
-        //    { '.', '.', '.', '.', '.' },
-        //    { '.', '.', 'B', '.', '.' },
-        //    { '.', '#', '.', '#', '.' },
-        //    { '.', '.', '.', '.', '.' }};
-
-
-
         string[,] level1 = {
-            { "", "", "", "", "" },
-            { "BABA", "IS", "YOU", "", "" },
-            { "", "", "", "", "" },
-            { "B", "", "", "", "" },
-            { "", "", "#", "O", "" }};
+            // 1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "BABA", "IS", "YOU", }, // 1
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 2
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 3
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 4
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 5
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 6
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 7
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 8
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 9
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "O", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 10
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "B", ".", ".", ".", "O", ".", ".", ".", "F", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 11
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "O", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 12
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 13
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 14
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 15
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 16
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 17
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", },}; // 18
 
         #endregion // Map Data
     }

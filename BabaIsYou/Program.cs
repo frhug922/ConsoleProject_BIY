@@ -8,9 +8,8 @@ namespace BabaIsYou {
     class Program {
         static void Main(string[] args) {
             Start();
-            GameManager game = new GameManager();
-            game.ChangeScene(new TitleScene()); // 시작 씬을 타이틀 씬으로 설정
-            game.Play();
+            GameManager.Instance.ChangeScene(new TitleScene()); // 시작 씬을 타이틀 씬으로 설정
+            GameManager.Instance.Play();
         }
 
         static void Start() {

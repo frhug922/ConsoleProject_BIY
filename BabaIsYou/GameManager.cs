@@ -33,20 +33,8 @@ namespace BabaIsYou {
 
         private bool _isRunning = true;
         private Scene _currScene; // 현재 씬을 저장
-        private List<Tile> _currPlayer;
 
         #endregion // private fields
-
-
-
-
-
-        #region properties
-
-        public List<Tile> CurrPlayer { get { return _currPlayer; } } // 현재 플레이어 타일
-        public RuleManager RuleManager { get; set; }
-
-        #endregion // properties
 
 
 
@@ -69,18 +57,6 @@ namespace BabaIsYou {
 
         public void ExitGame() {
             _isRunning = false; // 게임 종료
-        }
-
-        public void SetPlayer(List<Tile> player) {
-            _currPlayer = player;
-        }
-
-        public void ClearPlayer() {
-            _currPlayer = null; // 플레이어 초기화
-        }
-
-        public void UpdateRules() {
-            RuleManager.CheckRules();
         }
 
         #endregion // public funcs

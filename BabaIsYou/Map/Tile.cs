@@ -8,57 +8,27 @@ using System.Threading.Tasks;
 namespace BabaIsYou {
     public enum TileType {
         Empty,
-        Baba,
-        Push,
-        Wall,
         Rule,
+        Object,
     }
 
-    class Tile {
-        private TileType _type;
-        private bool _isPushable;
-        protected char _symbol;
-
-        public TileType TileType { get { return _type; } }
-        public bool IsPushable { get { return _isPushable; } set { _isPushable = value; } }
-        public char Symbol { get { return _symbol; } }
+    public class Tile {
+        public TileType TileType { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
+        public string Name { get; set; } // 타일의 이름 (예: "ROCK", "BABA", "WALL")
+        public bool IsPushable { get; set; }
 
-        public Tile(TileType type, int x, int y, bool isPushable = false) {
-            _type = type;
+        public Tile(TileType tileType, int x, int y, string name) {
+            TileType = tileType;
             X = x;
             Y = y;
-            _isPushable = isPushable;
-            SetTile(type);
+            Name = name;
         }
 
-        public void SetTile(TileType type) {
-            if (TileType.Baba == type) {
-                _symbol = 'B';
-            }
-            else if (TileType.Push == type) {
-                _symbol = 'O';
-            }
-            else if (TileType.Wall == type) {
-                _symbol = '#';
-            }
-            else {
-                _symbol = '.';
-            }
-        }
-    }
-
-    class RuleTile : Tile {
-        public string RuleText { get; private set; }
-
-        public RuleTile(string ruleText, int x, int y) : base(TileType.Rule, x, y, true) {
-            RuleText = ruleText;
-            this._symbol = this.RuleText[0]; // 룰 타일의 첫 글자를 심볼로 사용
-        }
-
-        public void SetRule(string newRule) {
-            RuleText = newRule;
+        public void SetPosition(int newX, int newY) {
+            this.X = newX;
+            this.Y = newY;
         }
     }
 }
