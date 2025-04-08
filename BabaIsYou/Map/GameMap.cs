@@ -86,39 +86,49 @@ namespace BabaIsYou {
                 return;
             }
 
-            if (targetTile.TileType == TileType.Push) {
-                int pushX = newX + (int)direction.X;
-                int pushY = newY + (int)direction.Y;
+            // 6. 밀 수 있는 타일들을 리스트로 저장
+            List<Tile> pushTiles = new List<Tile>();
+            int checkX = newX;
+            int checkY = newY;
 
-                if (pushX < 0 || pushX >= _width || pushY < 0 || pushY >= _height) {
-                    return;
+            while (checkX >= 0 && checkX < _width && checkY >= 0 && checkY < _height) {
+                Tile checkTile = Map[checkX, checkY];
+
+                if (!checkTile.IsPushable) {
+                    break; // 밀 수 없는 타일이 나오면 종료
                 }
 
-                Tile pushTargetTile = Map[pushX, pushY];
-
-                if (pushTargetTile.TileType == TileType.Empty) {
-                    // 밀기 성공: 밀리는 타일 이동
-                    Map[pushX, pushY] = targetTile;
-                    Map[newX, newY] = playerTile;
-                    Map[currentX, currentY] = new Tile(TileType.Empty, currentX, currentY);
-                    targetTile.X = pushX;
-                    targetTile.Y = pushY;
-                }
-                else {
-                    return;
-                }
-            }
-            else {
-                // 일반 이동 (빈 공간일 경우)
-                Map[newX, newY] = playerTile;
-                Map[currentX, currentY] = new Tile(TileType.Empty, currentX, currentY);
+                pushTiles.Add(checkTile);
+                checkX += (int)direction.X;
+                checkY += (int)direction.Y;
             }
 
-            // 6. 플레이어 위치 업데이트
+            // 7. 밀리는 타일의 끝부분이 맵을 벗어나면 이동 불가
+            if (checkX < 0 || checkX >= _width || checkY < 0 || checkY >= _height) {
+                return;
+            }
+
+            // 8. 밀리는 타일의 끝부분이 빈 공간이 아니라면 이동 불가
+            if (Map[checkX, checkY].TileType != TileType.Empty) {
+                return;
+            }
+
+            // 9. 모든 밀리는 타일을 이동
+            for (int i = pushTiles.Count - 1; i >= 0; i--) {
+                Tile pushTile = pushTiles[i];
+                int moveX = pushTile.X + (int)direction.X;
+                int moveY = pushTile.Y + (int)direction.Y;
+                Map[moveX, moveY] = pushTile;
+                pushTile.X = moveX;
+                pushTile.Y = moveY;
+            }
+
+            // 10. 플레이어 이동
+            Map[newX, newY] = playerTile;
+            Map[currentX, currentY] = new Tile(TileType.Empty, currentX, currentY);
             playerTile.X = newX;
             playerTile.Y = newY;
         }
-
 
         #endregion // public fields
 
@@ -215,8 +225,8 @@ namespace BabaIsYou {
 
         char[,] level1 = {
             { '.', '.', '.', '.', '.' },
-            { '.', '#', '#', '#', '.' },
-            { '.', '#', 'B', 'O', '.' },
+            { '.', 'O', 'O', 'O', '.' },
+            { '.', 'O', 'B', 'O', '.' },
             { '.', '#', 'R', '#', '.' },
             { '.', '.', '.', '.', '.' }};
 
