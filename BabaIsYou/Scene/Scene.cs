@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     abstract class Scene {
+        protected ConsoleKeyInfo _keyInfo;
         public abstract void Render();
-        public abstract void Input();
+        public virtual void Input() {
+            _keyInfo = Console.ReadKey(true);
+        }
         public abstract void Update();
     }
-
 }

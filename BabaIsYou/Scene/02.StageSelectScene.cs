@@ -24,9 +24,11 @@ namespace BabaIsYou {
         }
 
         public override void Input() {
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            base.Input();
+        }
 
-            switch (keyInfo.Key) {
+        public override void Update() {
+            switch (_keyInfo.Key) {
                 case ConsoleKey.UpArrow:
                     selectedIndex = (selectedIndex - 1 + stages.Length) % stages.Length;
                     break;
@@ -89,8 +91,5 @@ namespace BabaIsYou {
                 }
             }
         }
-
-        public override void Update() { }
     }
-
 }

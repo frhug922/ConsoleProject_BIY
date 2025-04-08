@@ -49,9 +49,11 @@ namespace BabaIsYou {
         }
 
         public override void Input() {
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            base.Input();
+        }
 
-            switch (keyInfo.Key) {
+        public override void Update() {
+            switch (_keyInfo.Key) {
                 case ConsoleKey.Escape:
                     ConfirmExit();
                     break;
@@ -101,6 +103,5 @@ namespace BabaIsYou {
             }
         }
 
-        public override void Update() { }
     }
 }
