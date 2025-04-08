@@ -19,7 +19,7 @@ namespace BabaIsYou {
 
         #region properties
 
-        public Tile[,] Map { get; private set; }
+        public Stack<Tile>[,] Map { get; private set; }
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
@@ -71,7 +71,7 @@ namespace BabaIsYou {
             for (int i = 0; i < controlledObjects.Count; i++) {
                 for (int y = 0; y < _height; y++) {
                     for (int x = 0; x < _width; x++) {
-                        Tile tile = Map[x, y];
+                        Tile tile = Map[x, y].Peek();
 
                         if (tile.TileType == TileType.Rule) {
                             continue; // 룰 타일은 무시
@@ -94,37 +94,36 @@ namespace BabaIsYou {
                 }
             }
 
-            // 이동을 시도하는 로직
+            // 2️⃣ 이동 로직
             foreach (Tile tile in movableTiles) {
                 int newX = tile.X + direction.X;
                 int newY = tile.Y + direction.Y;
 
                 if (!IsInBounds(newX, newY)) {
-                    continue; // 맵 밖으로 나가면 이동하지 않음
+                    continue;
                 }
 
-                Tile targetTile = Map[newX, newY];
+                Tile targetTile = Map[newX, newY].Count > 0 ? Map[newX, newY].Peek() : null;
 
-                // Stop 오브젝트인지 확인
-                if (RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
+                // STOP 오브젝트인지 확인
+                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
                     continue;
                 }
 
                 // PUSH 오브젝트인지 확인
-                if (RuleManager.Instance.HasRule(targetTile.Name, "IS", "PUSH")) {
-                    List<Tile> pushTiles = new List<Tile>(); // 밀릴 타일들을 저장
+                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "PUSH")) {
+                    List<Tile> pushTiles = new List<Tile>();
                     int checkX = newX, checkY = newY;
 
-                    // 연쇄적으로 밀릴 수 있는지 확인
                     while (IsInBounds(checkX, checkY)) {
-                        Tile checkTile = Map[checkX, checkY];
+                        Tile checkTile = Map[checkX, checkY].Count > 0 ? Map[checkX, checkY].Peek() : null;
 
-                        if (checkTile.TileType == TileType.Empty) {
-                            break; // 빈 공간을 만나면 밀 수 있음
+                        if (checkTile == null || checkTile.TileType == TileType.Empty) {
+                            break; // 밀 수 있음
                         }
 
                         if (!RuleManager.Instance.HasRule(checkTile.Name, "IS", "PUSH")) {
-                            pushTiles.Clear(); // 밀 수 없는 타일을 만나면 전체 취소
+                            pushTiles.Clear();
                             break;
                         }
 
@@ -133,32 +132,24 @@ namespace BabaIsYou {
                         checkY += direction.Y;
                     }
 
-                    // 밀릴 공간이 없으면 이동 취소
                     if (pushTiles.Count == 0 || !IsInBounds(checkX, checkY)) {
                         continue;
                     }
 
-                    // 밀기 수행 (역순으로 처리하여 마지막부터 밀어야 함)
                     for (int i = pushTiles.Count - 1; i >= 0; i--) {
                         Tile pushTile = pushTiles[i];
                         int moveX = pushTile.X + direction.X;
                         int moveY = pushTile.Y + direction.Y;
 
-                        Map[moveX, moveY] = pushTile;
+                        Map[moveX, moveY].Push(pushTile);
                         pushTile.SetPosition(moveX, moveY);
+                        Map[pushTile.X, pushTile.Y].Pop();
                     }
+                }
 
-                    // 원래 움직이려던 타일도 이동
-                    Map[tile.X, tile.Y] = new Tile(TileType.Empty, tile.X, tile.Y, ".");
-                    tile.SetPosition(newX, newY);
-                    Map[newX, newY] = tile;
-                }
-                else {
-                    // 그냥 이동 가능하면 이동
-                    Map[tile.X, tile.Y] = new Tile(TileType.Empty, tile.X, tile.Y, ".");
-                    tile.SetPosition(newX, newY);
-                    Map[newX, newY] = tile;
-                }
+                Map[tile.X, tile.Y].Pop();
+                tile.SetPosition(newX, newY);
+                Map[newX, newY].Push(tile);
             }
 
             UpdateRules();
@@ -168,13 +159,13 @@ namespace BabaIsYou {
         public void PrintMap() {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
-                    if (Map[x, y].TileType == TileType.Rule) {
+                    if (Map[x, y].Peek().TileType == TileType.Rule) {
                         // TODO 룰 타일 배경 색깔 변경
                     }
                     else {
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
-                    Console.Write(Map[x, y].Name.First() + " ");
+                    Console.Write(Map[x, y].Peek().Name.First() + " ");
                 }
                 Console.WriteLine();
             }
@@ -191,20 +182,30 @@ namespace BabaIsYou {
         private void InitializeMap(string[,] level) {
             _height = level.GetLength(0);
             _width = level.GetLength(1);
-            Map = new Tile[_width, _height];
+            Map = new Stack<Tile>[_width, _height];
+
+            for (int y = 0; y < _height; y++) {
+                for (int x = 0; x < _width; x++) {
+                    Map[x, y] = new Stack<Tile>();
+                    Map[x, y].Push(new Tile(TileType.Empty, x, y, ".")); // 초기화
+                }
+            }
 
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
                     string tileStr = level[y, x];
 
                     if (string.IsNullOrEmpty(tileStr) || tileStr == ".") { // 빈 타일
-                        Map[x, y] = new Tile(TileType.Empty, x, y, ".");
+                        //Map[x, y] = new Tile(TileType.Empty, x, y, ".");
+                        // Do Nothing
                     }
                     else if (tileStr == "#" || tileStr == "B" || tileStr == "O" || tileStr == "F") { // 오브젝트 타일. 추후 생기면 추가해야함.
-                        Map[x, y] = new Tile(TileType.Object, x, y, tileStr);
+                        //Map[x, y] = new Tile(TileType.Object, x, y, tileStr);
+                        Map[x, y].Push(new Tile(TileType.Object, x, y, tileStr));
                     }
                     else {
-                        Map[x, y] = new Tile(TileType.Rule, x, y, tileStr);
+                        //Map[x, y] = new Tile(TileType.Rule, x, y, tileStr);
+                        Map[x, y].Push(new Tile(TileType.Rule, x, y, tileStr));
                     }
                 }
             }
@@ -217,7 +218,7 @@ namespace BabaIsYou {
 
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
-                    Tile tile = Map[x, y];
+                    Tile tile = Map[x, y].Peek();
 
                     if (tile.TileType == TileType.Rule) {
                         TryAddRule(x, y); // 규칙 추가 시도
@@ -229,9 +230,9 @@ namespace BabaIsYou {
         private void TryAddRule(int x, int y) {
             // 가로 방향 규칙 추가 (예: BABA IS YOU)
             if (IsInBounds(x + 2, y)) {
-                Tile first = Map[x, y];
-                Tile second = Map[x + 1, y];
-                Tile third = Map[x + 2, y];
+                Tile first = Map[x, y].Peek();
+                Tile second = Map[x + 1, y].Peek();
+                Tile third = Map[x + 2, y].Peek();
 
                 if (second.Name == "IS" && IsValidSubject(first.Name) && IsValidAttribute(third.Name)) {
                     RuleManager.Instance.AddRule(first.Name, second.Name, third.Name);
@@ -240,9 +241,9 @@ namespace BabaIsYou {
 
             // 세로 방향 규칙 추가 (예: ROCK IS PUSH)
             if (IsInBounds(x, y + 2)) {
-                Tile first = Map[x, y];
-                Tile second = Map[x, y + 1];
-                Tile third = Map[x, y + 2];
+                Tile first = Map[x, y].Peek();
+                Tile second = Map[x, y + 1].Peek();
+                Tile third = Map[x, y + 2].Peek();
 
                 if (second.Name == "IS" && IsValidSubject(first.Name) && IsValidAttribute(third.Name)) {
                     RuleManager.Instance.AddRule(first.Name, second.Name, third.Name);
