@@ -40,10 +40,12 @@ namespace BabaIsYou {
         public override void Update() {
             switch (_keyInfo.Key) {
                 case ConsoleKey.UpArrow:
+                case ConsoleKey.W:
                     _selectedIndex = (_selectedIndex - 1 + _menuItems.Length) % _menuItems.Length;
                     break;
 
                 case ConsoleKey.DownArrow:
+                case ConsoleKey.S:
                     _selectedIndex = (_selectedIndex + 1) % _menuItems.Length;
                     break;
 
