@@ -47,6 +47,9 @@ namespace BabaIsYou {
         /// <param name="verb">"IS"</param>
         /// <param name="attribute">"YOU"</param>
         public void AddRule(string subject, string verb, string attribute) {
+            if (verb == "IS" && attribute == "YOU") {
+                activeRules.Add(new Rule(subject, verb, "STOP"));
+            }
             activeRules.Add(new Rule(subject, verb, attribute));
         }
 
