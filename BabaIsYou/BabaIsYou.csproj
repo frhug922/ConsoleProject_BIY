@@ -52,6 +52,7 @@
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="Scene\01.TitleScene.cs" />
     <Compile Include="Scene\02.StageSelectScene.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

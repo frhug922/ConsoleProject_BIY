@@ -51,6 +51,23 @@ namespace BabaIsYou {
 
         public override void Update() {
             switch (_keyInfo.Key) {
+                case ConsoleKey.UpArrow:
+                case ConsoleKey.W:
+                    gameMap.Move(Vector2.Up);
+                    break;
+                case ConsoleKey.DownArrow:
+                case ConsoleKey.S:
+                    gameMap.Move(Vector2.Down);
+                    break;
+                case ConsoleKey.LeftArrow:
+                case ConsoleKey.A:
+                    gameMap.Move(Vector2.Left);
+                    break;
+                case ConsoleKey.RightArrow:
+                case ConsoleKey.D:
+                    gameMap.Move(Vector2.Right);
+                    break;
+
                 case ConsoleKey.Escape:
                     ConfirmExit();
                     break;

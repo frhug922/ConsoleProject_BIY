@@ -1,41 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BabaIsYou {
-    // 모든 타일의 기본 클래스
-    abstract class Tile {
-        public virtual bool IsSolid => false;  // 충돌 여부 (기본값: false)
-        public virtual bool IsPushable => false; // 밀 수 있는지 여부
+    public enum TileType {
+        Empty,
+        Baba,
+        Push,
+        Wall,
+        Rule,
     }
 
-    // 빈 타일 (바닥)
-    class EmptyTile : Tile { }
+    class Tile {
+        private TileType _type;
+        private char _symbol;
 
-    // 벽 타일
-    class WallTile : Tile {
-        public override bool IsSolid => true; // 벽은 충돌함
-    }
+        public TileType TileType { get { return _type; } }
+        public bool IsPushable { get; private set; }
+        public char Symbol { get { return _symbol; } }
+        public int X { get; set; }
+        public int Y { get; set; }
 
-    // 플레이어 타일
-    class PlayerTile : Tile {
-        public override bool IsSolid => true; // 플레이어는 공간을 차지함
-    }
+        public Tile(TileType type, int x, int y, bool isPushable = false) {
+            X = x;
+            Y = y;
+            SetTile(type, isPushable);
+        }
 
-    // 밀 수 있는 오브젝트 타일 (예: 바위)
-    class PushableTile : Tile {
-        public override bool IsSolid => true; // 다른 오브젝트와 충돌
-        public override bool IsPushable => true; // 밀 수 있음
-    }
+        public void SetTile(TileType type, bool isPushable = false) {
+            _type = type;
+            IsPushable = isPushable;
 
-    // 텍스트 타일 (규칙 변경용)
-    class RuleTile : Tile {
-        public string RuleText { get; }
-
-        public RuleTile(string ruleText) {
-            RuleText = ruleText;
+            // 타입에 따른 심볼 설정
+            switch (type) {
+                case TileType.Baba:
+                    _symbol = 'B';
+                    break;
+                case TileType.Push:
+                    _symbol = 'O';
+                    break;
+                case TileType.Rule:
+                    _symbol = 'R';
+                    break;
+                case TileType.Wall:
+                    _symbol = '#';
+                    break;
+                case TileType.Empty:
+                default:
+                    _symbol = '.';
+                    break;
+            }
         }
     }
 
