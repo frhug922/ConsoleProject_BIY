@@ -149,15 +149,15 @@ namespace BabaIsYou {
                     }
 
                     // 원래 움직이려던 타일도 이동
-                    Map[newX, newY] = tile;
-                    tile.SetPosition(newX, newY);
                     Map[tile.X, tile.Y] = new Tile(TileType.Empty, tile.X, tile.Y, ".");
+                    tile.SetPosition(newX, newY);
+                    Map[newX, newY] = tile;
                 }
                 else {
                     // 그냥 이동 가능하면 이동
-                    Map[newX, newY] = tile;
-                    tile.SetPosition(newX, newY);
                     Map[tile.X, tile.Y] = new Tile(TileType.Empty, tile.X, tile.Y, ".");
+                    tile.SetPosition(newX, newY);
+                    Map[newX, newY] = tile;
                 }
             }
 
