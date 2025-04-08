@@ -6,8 +6,18 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     class StageSelectScene : Scene {
+        #region private fields
+
         private int selectedIndex = 0;
         private string[] stages = { "01", "02", "03", "04", "05" };
+
+        #endregion // private fields
+
+
+
+
+
+        #region public funcs
 
         public override void Render() {
             Console.SetCursorPosition(0, 0);
@@ -46,6 +56,14 @@ namespace BabaIsYou {
                     break;
             }
         }
+
+        #endregion // public funcs
+
+
+
+
+
+        #region private funcs
 
         private void ConfirmExit() {
             string[] options = { "예", "아니오" };
@@ -91,5 +109,7 @@ namespace BabaIsYou {
                 }
             }
         }
+
+        #endregion // private funcs
     }
 }

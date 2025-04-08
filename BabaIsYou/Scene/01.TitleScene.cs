@@ -6,8 +6,18 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     class TitleScene : Scene {
+        #region private fields
+
         private int _selectedIndex = 0;
         private string[] _menuItems = { "게임 시작", "게임 종료" };
+
+        #endregion // private fields
+
+
+
+
+
+        #region public funcs
 
         public override void Render() {
             Console.SetCursorPosition(0, 0);
@@ -47,5 +57,7 @@ namespace BabaIsYou {
                     break;
             }
         }
+
+        #endregion // public funcs
     }
 }

@@ -6,34 +6,31 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     class GameScene : Scene {
+        #region private fields
+
         private string stageNumber; // 선택된 스테이지 번호
         private GameMap gameMap;
+
+        #endregion // private fields
+
+
+
+
+
+        #region public fields
 
         public GameScene(string stageNumber) {
             this.stageNumber = stageNumber;
             LoadMap();
         }
 
-        private void LoadMap() {
-            if (stageNumber == "01") {
-                gameMap = new GameMap(1);
-            }
-            else if (stageNumber == "02") {
-                gameMap = new GameMap(2);
-            }
-            else if (stageNumber == "03") {
-                gameMap = new GameMap(3);
-            }
-            else if (stageNumber == "04") {
-                gameMap = new GameMap(4);
-            }
-            else if (stageNumber == "05") {
-                gameMap = new GameMap(5);
-            }
-            else {
-                throw new ArgumentException("Invalid stage number");
-            }
-        }
+        #endregion // public fields
+
+
+
+
+
+        #region public funcs
 
         public override void Render() {
             Console.SetCursorPosition(0, 0);
@@ -57,6 +54,35 @@ namespace BabaIsYou {
                 case ConsoleKey.Escape:
                     ConfirmExit();
                     break;
+            }
+        }
+
+        #endregion // public funcs
+
+
+
+
+
+        #region private funcs
+
+        private void LoadMap() {
+            if (stageNumber == "01") {
+                gameMap = new GameMap(1);
+            }
+            else if (stageNumber == "02") {
+                gameMap = new GameMap(2);
+            }
+            else if (stageNumber == "03") {
+                gameMap = new GameMap(3);
+            }
+            else if (stageNumber == "04") {
+                gameMap = new GameMap(4);
+            }
+            else if (stageNumber == "05") {
+                gameMap = new GameMap(5);
+            }
+            else {
+                throw new ArgumentException("Invalid stage number");
             }
         }
 
@@ -103,5 +129,6 @@ namespace BabaIsYou {
             }
         }
 
+        #endregion // private funcs
     }
 }

@@ -7,9 +7,19 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     class GameManager {
+        #region private fields
+
         private static GameManager instance = null;
         private bool isRunning = true;
         private Scene currScene; // 현재 씬을 저장
+
+        #endregion // private fields
+
+
+
+
+
+        #region public fields
 
         public static GameManager Instance {
             get {
@@ -22,6 +32,14 @@ namespace BabaIsYou {
         public GameManager() {
             instance = this;
         }
+
+        #endregion // public fields
+
+
+
+
+
+        #region public funcs
 
         public void Play() {
             while (isRunning) {
@@ -39,5 +57,7 @@ namespace BabaIsYou {
         public void ExitGame() {
             isRunning = false; // 게임 종료
         }
+
+        #endregion // public funcs
     }
 }

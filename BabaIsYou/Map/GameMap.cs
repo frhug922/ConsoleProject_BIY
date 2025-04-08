@@ -6,9 +6,28 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     class GameMap {
-        public Tile[,] Map { get; private set; }
-        private int _width, _height;
+        #region private fields
 
+        private int _width;
+        private int _height;
+
+        #endregion // private fields
+
+
+
+
+
+        #region properties
+
+        public Tile[,] Map { get; private set; }
+
+        #endregion // properties
+
+
+
+
+
+        #region public fields
         public GameMap(int level) {
             if (level == 1) {
                 _width = 33;
@@ -35,6 +54,31 @@ namespace BabaIsYou {
             InitializeMap();
         }
 
+        #endregion // public fields
+
+
+
+
+
+        #region // public funcs
+
+        public void PrintMap() {
+            for (int y = 0; y < _height; y++) {
+                for (int x = 0; x < _width; x++) {
+                    Console.Write(GetTileSymbol(Map[x, y]) + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        #endregion // public funcs
+
+
+
+
+
+        #region // private funcs
+
         private void InitializeMap() {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
@@ -49,15 +93,6 @@ namespace BabaIsYou {
             Map[1, 1] = new RuleTile("B");
         }
 
-        public void PrintMap() {
-            for (int y = 0; y < _height; y++) {
-                for (int x = 0; x < _width; x++) {
-                    Console.Write(GetTileSymbol(Map[x, y]) + " ");
-                }
-                Console.WriteLine();
-            }
-        }
-
         private char GetTileSymbol(Tile tile) {
             if (tile is PlayerTile) return 'P';
             if (tile is WallTile) return '#';
@@ -65,6 +100,7 @@ namespace BabaIsYou {
             if (tile is RuleTile) return 'T';
             return '.';
         }
-    }
 
+        #endregion // private funcs
+    }
 }
