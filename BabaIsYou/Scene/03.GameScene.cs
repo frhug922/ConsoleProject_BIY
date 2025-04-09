@@ -79,19 +79,19 @@ namespace BabaIsYou {
 
         private void LoadMap() {
             if (stageNumber == "01") {
-                gameMap = new GameMap(1);
+                gameMap = new GameMap(1, PrintClear);
             }
             else if (stageNumber == "02") {
-                gameMap = new GameMap(2);
+                gameMap = new GameMap(2, PrintClear);
             }
             else if (stageNumber == "03") {
-                gameMap = new GameMap(3);
+                gameMap = new GameMap(3, PrintClear);
             }
             else if (stageNumber == "04") {
-                gameMap = new GameMap(4);
+                gameMap = new GameMap(4, PrintClear);
             }
             else if (stageNumber == "05") {
-                gameMap = new GameMap(5);
+                gameMap = new GameMap(5, PrintClear);
             }
             else {
                 throw new ArgumentException("Invalid stage number");
@@ -139,6 +139,22 @@ namespace BabaIsYou {
                         }
                 }
             }
+        }
+
+        private void PrintGameOver() {
+            Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
+            Console.WriteLine("게임 오버!");
+            Console.WriteLine("다시 시작하려면 아무 키나 누르세요.");
+            Console.ReadKey(true);
+            GameManager.Instance.ChangeScene(new StageSelectScene());
+        }
+
+        private void PrintClear() {
+            Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
+            Console.WriteLine("스테이지 클리어!");
+            Console.WriteLine("다음 스테이지로 이동하려면 아무 키나 누르세요.");
+            Console.ReadKey(true);
+            GameManager.Instance.ChangeScene(new StageSelectScene());
         }
 
         #endregion // private funcs

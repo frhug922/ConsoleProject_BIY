@@ -74,7 +74,8 @@ namespace BabaIsYou {
             Dictionary<string, string> nameMappings = new Dictionary<string, string> {
                 { "#", "WALL" },
                 { "B", "BABA" },
-                { "O", "ROCK" }};
+                { "O", "ROCK" },
+                { "F", "FLAG" }};
 
             if (nameMappings.ContainsKey(subject)) {
                 subject = nameMappings[subject];
@@ -101,6 +102,18 @@ namespace BabaIsYou {
             }
 
             return controlledObjects;
+        }
+
+        public List<string> GetWinObjects() {
+            List<string> winObjects = new List<string>();
+
+            foreach (var rule in activeRules) {
+                if (rule.Verb == "IS" && rule.Attribute == "WIN") {
+                    winObjects.Add(rule.Subject);
+                }
+            }
+
+            return winObjects;
         }
 
         public void ClearRules() {

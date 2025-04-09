@@ -10,6 +10,7 @@ namespace BabaIsYou {
 
         private int _width;
         private int _height;
+        private Action _winCallback;
 
         #endregion // private fields
 
@@ -30,7 +31,7 @@ namespace BabaIsYou {
 
 
         #region public fields
-        public GameMap(int level) {
+        public GameMap(int level, Action winCallback) {
             if (level == 1) {
                 _width = level1.GetLength(0);
                 _height = level1.GetLength(1);
@@ -48,6 +49,8 @@ namespace BabaIsYou {
             else if (level == 5) {
 
             }
+
+            _winCallback = winCallback;
         }
 
         #endregion // public fields
@@ -78,17 +81,12 @@ namespace BabaIsYou {
                         }
 
                         // 조작 가능한 오브젝트에 따라 타일을 추가
-                        if (controlledObjects.Contains("BABA") && tile.Name == "B") {
+                        if (controlledObjects.Contains("BABA") && tile.Name == "B"
+                            || controlledObjects.Contains("ROCK") && tile.Name == "O"
+                            || controlledObjects.Contains("WALL") && tile.Name == "#"
+                            || controlledObjects.Contains("FLAG") && tile.Name == "F"
+                            ) {
                             movableTiles.Add(tile); // "B" 타일을 움직일 수 있음
-                        }
-                        else if (controlledObjects.Contains("ROCK") && tile.Name == "O") {
-                            movableTiles.Add(tile); // "O" 타일을 움직일 수 있음
-                        }
-                        else if (controlledObjects.Contains("WALL") && tile.Name == "#") {
-                            movableTiles.Add(tile); // 벽도 움직일 수 있도록 처리
-                        }
-                        else if (controlledObjects.Contains("FLAG") && tile.Name == "F") {
-                            movableTiles.Add(tile); // "F" (플래그)도 움직일 수 있도록 처리
                         }
                     }
                 }
@@ -118,6 +116,12 @@ namespace BabaIsYou {
                 }
 
                 Tile targetTile = Map[newX, newY].Count > 0 ? Map[newX, newY].Peek() : null;
+
+                // WIN 오브젝트인지 확인
+                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "WIN")) {
+                    _winCallback(); // 승리 조건 충족 시 콜백 호출
+                    return;
+                }
 
                 // STOP 오브젝트인지 확인
                 if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
@@ -168,7 +172,6 @@ namespace BabaIsYou {
 
             UpdateRules();
         }
-
 
         public void PrintMap() {
             for (int y = 0; y < _height; y++) {
@@ -287,10 +290,10 @@ namespace BabaIsYou {
 
         string[,] level1 = {
             // 1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "ROCK", "IS", "YOU", }, // 1
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "FLAG", "IS", "WIN", }, // 1
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "BABA", "IS", "YOU", }, // 2
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 3
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 4
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "ROCK", "IS", "PUSH", }, // 3
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "WALL", "IS", "STOP", }, // 4
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 5
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 6
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 7
