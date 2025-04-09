@@ -137,15 +137,17 @@ namespace BabaIsYou {
                         Tile checkTile = Map[checkX, checkY].Count > 0 ? Map[checkX, checkY].Peek() : null;
 
                         if (checkTile == null || checkTile.TileType == TileType.Empty) {
-                            break; // 밀 수 있음
+                            break;
                         }
 
-                        if (!RuleManager.Instance.HasRule(checkTile.Name, "IS", "PUSH")) {
+                        if (RuleManager.Instance.HasRule(checkTile.Name, "IS", "STOP")) {
                             pushTiles.Clear();
                             break;
                         }
 
-                        pushTiles.Add(checkTile);
+                        if (RuleManager.Instance.HasRule(checkTile.Name, "IS", "PUSH")) {
+                            pushTiles.Add(checkTile);
+                        }
                         checkX += direction.X;
                         checkY += direction.Y;
                     }
@@ -159,9 +161,9 @@ namespace BabaIsYou {
                         int moveX = pushTile.X + direction.X;
                         int moveY = pushTile.Y + direction.Y;
 
-                        Map[moveX, moveY].Push(pushTile);
-                        pushTile.SetPosition(moveX, moveY);
                         Map[pushTile.X, pushTile.Y].Pop();
+                        pushTile.SetPosition(moveX, moveY);
+                        Map[moveX, moveY].Push(pushTile);
                     }
                 }
 
