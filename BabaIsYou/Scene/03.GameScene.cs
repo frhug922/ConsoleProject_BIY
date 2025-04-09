@@ -64,6 +64,10 @@ namespace BabaIsYou {
                     gameMap.Move(Vector2.Right);
                     break;
 
+                case ConsoleKey.R:
+                    ConfirmRestart();
+                    break;
+
                 case ConsoleKey.Escape:
                     ConfirmExit();
                     break;
@@ -96,6 +100,41 @@ namespace BabaIsYou {
             }
             else {
                 throw new ArgumentException("Invalid stage number");
+            }
+        }
+
+        private void ConfirmRestart() {
+            string[] options = { "예", "아니오" };
+            int selectedIndex = 0;
+            while (true) {
+                Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
+                Console.Write("정말로 다시 시작하시겠습니까?");
+                for (int i = 0; i < options.Length; i++) {
+                    Console.SetCursorPosition(5, gameMap.Map.GetLength(1) + 4 + i);
+                    if (i == selectedIndex)
+                        Console.Write("▶ " + options[i]);
+                    else
+                        Console.Write("  " + options[i]);
+                }
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                switch (key.Key) {
+                    case ConsoleKey.UpArrow:
+                        selectedIndex = (selectedIndex - 1 + options.Length) % options.Length;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedIndex = (selectedIndex + 1) % options.Length;
+                        break;
+                    case ConsoleKey.Enter:
+                        if (selectedIndex == 0) { // "예" 선택
+                            LoadMap();
+                        }
+                        Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
+                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 정말로 다시 시작하시겠습니까?
+                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 
+                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 예
+                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 아니오 // 해당 줄까지 지우기.
+                        return;
+                }
             }
         }
 
