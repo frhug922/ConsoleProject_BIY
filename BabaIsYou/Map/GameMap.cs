@@ -257,6 +257,7 @@ namespace BabaIsYou {
             if (_previousMap.Count > 0) {
                 Map = _previousMap.Pop();
             }
+            UpdateRules();
         }
 
         #endregion // public funcs
