@@ -240,14 +240,23 @@ namespace BabaIsYou {
         public void PrintMap() {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
+                    //if (Map[x, y].Peek().TileType == TileType.Rule) {
+                    //    Util.SetConsoleColor(Map[x, y].Peek().Name);
+                    //}
+                    //else {
+                    //    Console.BackgroundColor = ConsoleColor.Black;
+                    //    Console.ForegroundColor = ConsoleColor.White;
+                    //}
+                    //Console.Write(Map[x, y].Peek().Name.First() + " ");
+
+                    Util.SetConsoleColor(Map[x, y].Peek().Name);
                     if (Map[x, y].Peek().TileType == TileType.Rule) {
-                        Util.SetConsoleColor(Map[x, y].Peek().Name);
+                        Console.Write(Map[x, y].Peek().Name.First() + " ");
                     }
                     else {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write(Map[x, y].Peek().Name.First() == '.' ? ". " : "  ");
+                        //Console.Write("  ");
                     }
-                    Console.Write(Map[x, y].Peek().Name.First() + " ");
                 }
                 Console.WriteLine();
             }
