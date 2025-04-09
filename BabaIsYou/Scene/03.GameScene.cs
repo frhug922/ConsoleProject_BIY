@@ -80,19 +80,19 @@ namespace BabaIsYou {
 
         private void LoadMap() {
             if (stageNumber == "01") {
-                gameMap = new GameMap(1, PrintClear);
+                gameMap = new GameMap(1, PrintClear, PrintGameOver);
             }
             else if (stageNumber == "02") {
-                gameMap = new GameMap(2, PrintClear);
+                gameMap = new GameMap(2, PrintClear, PrintGameOver);
             }
             else if (stageNumber == "03") {
-                gameMap = new GameMap(3, PrintClear);
+                gameMap = new GameMap(3, PrintClear, PrintGameOver);
             }
             else if (stageNumber == "04") {
-                gameMap = new GameMap(4, PrintClear);
+                gameMap = new GameMap(4, PrintClear, PrintGameOver);
             }
             else if (stageNumber == "05") {
-                gameMap = new GameMap(5, PrintClear);
+                gameMap = new GameMap(5, PrintClear, PrintGameOver);
             }
             else {
                 throw new ArgumentException("Invalid stage number");
@@ -145,14 +145,19 @@ namespace BabaIsYou {
         private void PrintRule() {
             var objectDefinitions = new Dictionary<string, string>{
                 { "BABA", "B" },
-                { "WALL", "W" },
+                { "#WALL", "#" },
                 { "FLAG", "F" },
                 { "ROCK", "R" },
+                { "~WATER", "~" },
+                { "SKULL", "S" },
+                { "GRASS", "G" },
                 { "IS", "I" },
                 { "YOU", "Y" },
                 { "WIN", "W" },
                 { "STOP", "S" },
-                { "PUSH", "P" }};
+                { "PUSH", "P" },
+                { "SINK", "S" },
+                { "DEFEAT", "D" },};
 
             int startX = gameMap.Map.GetLength(0) * 2 + 2;
             int startY = 2; // 시작 위치
@@ -169,11 +174,13 @@ namespace BabaIsYou {
         }
 
         private void PrintGameOver() {
+            Render();
             Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
             Console.WriteLine("게임 오버!");
             Console.WriteLine("다시 시작하려면 아무 키나 누르세요.");
             Console.ReadKey(true);
-            GameManager.Instance.ChangeScene(new StageSelectScene());
+            Console.Clear();
+            LoadMap();
         }
 
         private void PrintClear() {
