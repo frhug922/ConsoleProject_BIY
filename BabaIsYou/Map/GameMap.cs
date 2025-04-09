@@ -106,6 +106,8 @@ namespace BabaIsYou {
                 movableTiles = movableTiles.OrderBy(t => t.X).ToList(); // 왼쪽 이동 시 X가 작은 순서
             }
 
+            bool isWin = false;
+
             // 이동 로직
             foreach (Tile tile in movableTiles) {
                 int newX = tile.X + direction.X;
@@ -116,12 +118,6 @@ namespace BabaIsYou {
                 }
 
                 Tile targetTile = Map[newX, newY].Count > 0 ? Map[newX, newY].Peek() : null;
-
-                // WIN 오브젝트인지 확인
-                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "WIN")) {
-                    _winCallback(); // 승리 조건 충족 시 콜백 호출
-                    return;
-                }
 
                 // STOP 오브젝트인지 확인
                 if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
@@ -170,8 +166,16 @@ namespace BabaIsYou {
                 Map[tile.X, tile.Y].Pop();
                 tile.SetPosition(newX, newY);
                 Map[newX, newY].Push(tile);
+
+                // 승리 조건 확인
+                if (Map[newX, newY].Any(x => RuleManager.Instance.HasRule(x.Name, "IS", "WIN"))) {
+                    isWin = true;
+                }
             }
 
+            if (isWin) {
+                _winCallback(); // 승리 조건 충족 시 콜백 호출
+            }
             UpdateRules();
         }
 
@@ -232,7 +236,7 @@ namespace BabaIsYou {
             UpdateRules();
         }
 
-        public void UpdateRules() {
+        private void UpdateRules() {
             RuleManager.Instance.ClearRules(); // 기존 규칙 초기화
 
             for (int y = 0; y < _height; y++) {

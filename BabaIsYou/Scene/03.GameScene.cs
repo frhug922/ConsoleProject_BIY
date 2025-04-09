@@ -150,6 +150,7 @@ namespace BabaIsYou {
         }
 
         private void PrintClear() {
+            Render();
             Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
             Console.WriteLine("스테이지 클리어!");
             Console.WriteLine("다음 스테이지로 이동하려면 아무 키나 누르세요.");
