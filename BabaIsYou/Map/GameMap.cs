@@ -120,7 +120,7 @@ namespace BabaIsYou {
                 Tile targetTile = Map[newX, newY].Count > 0 ? Map[newX, newY].Peek() : null;
 
                 // STOP 오브젝트인지 확인
-                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP")) {
+                if (targetTile != null && RuleManager.Instance.HasRule(targetTile.Name, "IS", "STOP") && targetTile.TileType != TileType.Rule) {
                     continue;
                 }
 
@@ -136,12 +136,12 @@ namespace BabaIsYou {
                             break;
                         }
 
-                        if (RuleManager.Instance.HasRule(checkTile.Name, "IS", "STOP")) {
+                        if (RuleManager.Instance.HasRule(checkTile.Name, "IS", "STOP") && checkTile.TileType != TileType.Rule) {
                             pushTiles.Clear();
                             break;
                         }
 
-                        if (RuleManager.Instance.HasRule(checkTile.Name, "IS", "PUSH")) {
+                        if (RuleManager.Instance.HasRule(checkTile.Name, "IS", "PUSH") || checkTile.TileType == TileType.Rule) {
                             pushTiles.Add(checkTile);
                         }
                         checkX += direction.X;
@@ -183,43 +183,7 @@ namespace BabaIsYou {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
                     if (Map[x, y].Peek().TileType == TileType.Rule) {
-                        if (Map[x, y].Peek().Name == "IS") {
-                            Console.BackgroundColor = ConsoleColor.Gray;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                        }
-                        else if (Map[x, y].Peek().Name == "YOU") {
-                            Console.BackgroundColor = ConsoleColor.Magenta;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                        }
-                        else if (Map[x, y].Peek().Name == "PUSH") {
-                            Console.BackgroundColor = ConsoleColor.DarkYellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                        }
-                        else if (Map[x, y].Peek().Name == "STOP") {
-                            Console.BackgroundColor = ConsoleColor.DarkGreen;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                        }
-                        else if (Map[x, y].Peek().Name == "WIN") {
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                        }
-
-                        else if (Map[x, y].Peek().Name == "BABA") {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                        }
-                        else if (Map[x, y].Peek().Name == "ROCK") {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        }
-                        else if (Map[x, y].Peek().Name == "WALL") {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            Console.ForegroundColor = ConsoleColor.DarkGreen;
-                        }
-                        else if (Map[x, y].Peek().Name == "FLAG") {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                        }
+                        Util.SetConsoleColor(Map[x, y].Peek().Name);
                     }
                     else {
                         Console.BackgroundColor = ConsoleColor.Black;
@@ -333,13 +297,13 @@ namespace BabaIsYou {
 
         string[,] level1 = {
             // 1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "FLAG", "IS", "WIN", }, // 1
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "BABA", "IS", "YOU", }, // 2
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "ROCK", "IS", "PUSH", }, // 3
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", "WALL", "IS", "STOP", }, // 4
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 1
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 2
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 3
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 4
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 5
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 6
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 7
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "BABA", "IS", "YOU", ".", ".", ".", ".", ".", "FLAG", "IS", "WIN", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 7
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 8
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 9
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "R", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 10
@@ -347,7 +311,7 @@ namespace BabaIsYou {
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "R", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 12
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 13
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 14
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 15
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "WALL", "IS", "STOP", ".", ".", ".", ".", ".", "ROCK", "IS", "PUSH", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 15
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 16
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 17
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", },}; // 18

@@ -38,6 +38,7 @@ namespace BabaIsYou {
             Console.SetCursorPosition(0, 0);
             Console.WriteLine($"=== Stage {stageNumber} ===");
             gameMap.PrintMap();
+            PrintRule();
         }
 
         public override void Input() {
@@ -138,6 +139,32 @@ namespace BabaIsYou {
                             return;
                         }
                 }
+            }
+        }
+
+        private void PrintRule() {
+            var objectDefinitions = new Dictionary<string, string>{
+                { "BABA", "B" },
+                { "WALL", "W" },
+                { "FLAG", "F" },
+                { "ROCK", "R" },
+                { "IS", "I" },
+                { "YOU", "Y" },
+                { "WIN", "W" },
+                { "STOP", "S" },
+                { "PUSH", "P" }};
+
+            int startX = gameMap.Map.GetLength(0) * 2 + 2;
+            int startY = 2; // 시작 위치
+
+            int line = 0;
+            foreach (var obj in objectDefinitions) {
+                Console.SetCursorPosition(startX, startY + line);
+                Util.SetConsoleColor(obj.Key);
+                Console.Write(obj.Value + " ");
+                Util.SetConsoleColor("");
+                Console.Write($" = {obj.Key}");
+                line++;
             }
         }
 
