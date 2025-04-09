@@ -72,9 +72,9 @@ namespace BabaIsYou {
         /// <returns>true / false</returns>
         public bool HasRule(string subject, string verb, string attribute) {
             Dictionary<string, string> nameMappings = new Dictionary<string, string> {
-                { "#", "WALL" },
+                { "W", "WALL" },
                 { "B", "BABA" },
-                { "O", "ROCK" },
+                { "R", "ROCK" },
                 { "F", "FLAG" }};
 
             if (nameMappings.ContainsKey(subject)) {

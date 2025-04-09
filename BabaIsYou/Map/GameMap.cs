@@ -82,8 +82,8 @@ namespace BabaIsYou {
 
                         // 조작 가능한 오브젝트에 따라 타일을 추가
                         if (controlledObjects.Contains("BABA") && tile.Name == "B"
-                            || controlledObjects.Contains("ROCK") && tile.Name == "O"
-                            || controlledObjects.Contains("WALL") && tile.Name == "#"
+                            || controlledObjects.Contains("ROCK") && tile.Name == "R"
+                            || controlledObjects.Contains("WALL") && tile.Name == "W"
                             || controlledObjects.Contains("FLAG") && tile.Name == "F"
                             ) {
                             movableTiles.Add(tile); // "B" 타일을 움직일 수 있음
@@ -183,10 +183,47 @@ namespace BabaIsYou {
             for (int y = 0; y < _height; y++) {
                 for (int x = 0; x < _width; x++) {
                     if (Map[x, y].Peek().TileType == TileType.Rule) {
-                        // TODO 룰 타일 배경 색깔 변경
+                        if (Map[x, y].Peek().Name == "IS") {
+                            Console.BackgroundColor = ConsoleColor.Gray;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+                        else if (Map[x, y].Peek().Name == "YOU") {
+                            Console.BackgroundColor = ConsoleColor.Magenta;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+                        else if (Map[x, y].Peek().Name == "PUSH") {
+                            Console.BackgroundColor = ConsoleColor.DarkYellow;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+                        else if (Map[x, y].Peek().Name == "STOP") {
+                            Console.BackgroundColor = ConsoleColor.DarkGreen;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+                        else if (Map[x, y].Peek().Name == "WIN") {
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                        }
+
+                        else if (Map[x, y].Peek().Name == "BABA") {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                        }
+                        else if (Map[x, y].Peek().Name == "ROCK") {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        }
+                        else if (Map[x, y].Peek().Name == "WALL") {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
+                        }
+                        else if (Map[x, y].Peek().Name == "FLAG") {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                        }
                     }
                     else {
                         Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                     Console.Write(Map[x, y].Peek().Name.First() + " ");
                 }
@@ -222,7 +259,7 @@ namespace BabaIsYou {
                         //Map[x, y] = new Tile(TileType.Empty, x, y, ".");
                         // Do Nothing
                     }
-                    else if (tileStr == "#" || tileStr == "B" || tileStr == "O" || tileStr == "F") { // 오브젝트 타일. 추후 생기면 추가해야함.
+                    else if (tileStr == "W" || tileStr == "B" || tileStr == "R" || tileStr == "F") { // 오브젝트 타일. 추후 생기면 추가해야함.
                         //Map[x, y] = new Tile(TileType.Object, x, y, tileStr);
                         Map[x, y].Push(new Tile(TileType.Object, x, y, tileStr));
                     }
@@ -304,11 +341,11 @@ namespace BabaIsYou {
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 6
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 7
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 8
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 9
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "O", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 10
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "B", ".", ".", ".", "O", ".", ".", ".", "F", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 11
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "O", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 12
-            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 13
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 9
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "R", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 10
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "B", ".", ".", ".", "R", ".", ".", ".", "F", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 11
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "R", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 12
+            { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 13
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 14
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 15
             { ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "." ,".", ".", ".", ".", ".", ".", ".", ".", ".", ".", }, // 16
