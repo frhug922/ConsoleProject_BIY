@@ -64,7 +64,13 @@ namespace BabaIsYou {
                     gameMap.Move(Vector2.Right);
                     break;
 
+                case ConsoleKey.Z:
+                    ClearMessage();
+                    gameMap.RestoreMap();
+                    break;
+
                 case ConsoleKey.R:
+                    ClearMessage();
                     ConfirmRestart();
                     break;
 
@@ -103,6 +109,14 @@ namespace BabaIsYou {
             }
         }
 
+        private void ClearMessage() {
+            Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
+            Console.WriteLine(new string(' ', Console.WindowWidth));
+            Console.WriteLine(new string(' ', Console.WindowWidth));
+            Console.WriteLine(new string(' ', Console.WindowWidth));
+            Console.WriteLine(new string(' ', Console.WindowWidth));
+        }
+
         private void ConfirmRestart() {
             string[] options = { "예", "아니오" };
             int selectedIndex = 0;
@@ -128,11 +142,7 @@ namespace BabaIsYou {
                         if (selectedIndex == 0) { // "예" 선택
                             LoadMap();
                         }
-                        Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
-                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 정말로 다시 시작하시겠습니까?
-                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 
-                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 예
-                        Console.WriteLine(new string(' ', Console.WindowWidth)); // 아니오 // 해당 줄까지 지우기.
+                        ClearMessage();
                         return;
                 }
             }
@@ -215,11 +225,8 @@ namespace BabaIsYou {
         private void PrintGameOver() {
             Render();
             Console.SetCursorPosition(0, gameMap.Map.GetLength(1) + 2);
-            Console.WriteLine("게임 오버!");
-            Console.WriteLine("다시 시작하려면 아무 키나 누르세요.");
-            Console.ReadKey(true);
-            Console.Clear();
-            LoadMap();
+            Console.WriteLine("Z 되돌리기");
+            Console.WriteLine("R 재시작");
         }
 
         private void PrintClear() {

@@ -26,6 +26,13 @@ namespace BabaIsYou {
             Name = name;
         }
 
+        public Tile(Tile other) {
+            Name = other.Name;
+            TileType = other.TileType;
+            X = other.X;
+            Y = other.Y;
+        }
+
         public void SetPosition(int newX, int newY) {
             this.X = newX;
             this.Y = newY;
