@@ -89,20 +89,29 @@ namespace BabaIsYou {
         #region private funcs
 
         private void LoadMap() {
-            if (stageNumber == "01") {
-                gameMap = new GameMap(1, PrintClear, PrintGameOver);
-            }
-            else if (stageNumber == "02") {
-                gameMap = new GameMap(2, PrintClear, PrintGameOver);
-            }
-            else if (stageNumber == "03") {
-                gameMap = new GameMap(3, PrintClear, PrintGameOver);
-            }
-            else if (stageNumber == "04") {
-                gameMap = new GameMap(4, PrintClear, PrintGameOver);
-            }
-            else if (stageNumber == "05") {
-                gameMap = new GameMap(5, PrintClear, PrintGameOver);
+            //if (stageNumber == "01") {
+            //    gameMap = new GameMap(1, PrintClear, PrintGameOver);
+            //}
+            //else if (stageNumber == "02") {
+            //    gameMap = new GameMap(2, PrintClear, PrintGameOver);
+            //}
+            //else if (stageNumber == "03") {
+            //    gameMap = new GameMap(3, PrintClear, PrintGameOver);
+            //}
+            //else if (stageNumber == "04") {
+            //    gameMap = new GameMap(4, PrintClear, PrintGameOver);
+            //}
+            //else if (stageNumber == "05") {
+            //    gameMap = new GameMap(5, PrintClear, PrintGameOver);
+            //}
+            //else if (stageNumber == "05") {
+            //    gameMap = new GameMap(6, PrintClear, PrintGameOver);
+            //}
+            //else {
+            //    throw new ArgumentException("Invalid stage number");
+            //}
+            if (int.TryParse(stageNumber, out int stage)) {
+                gameMap = new GameMap(stage, PrintClear, PrintGameOver);
             }
             else {
                 throw new ArgumentException("Invalid stage number");

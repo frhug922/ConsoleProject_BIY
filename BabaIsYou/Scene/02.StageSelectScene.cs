@@ -9,7 +9,7 @@ namespace BabaIsYou {
         #region private fields
 
         private int selectedIndex = 0;
-        private string[] stages = { "01", "02", "03", "04", "05" };
+        private string[] stages = { "01", "02", "03", "04", "05", "06", "07" };
 
         #endregion // private fields
 

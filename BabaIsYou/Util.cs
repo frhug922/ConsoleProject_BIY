@@ -44,21 +44,27 @@ namespace BabaIsYou {
                     Console.BackgroundColor = ConsoleColor.Magenta;
                     break;
                 case "#":
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.DarkGreen;
                     break;
                 case "R":
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.DarkYellow;
                     break;
                 case "F":
+                    Console.ForegroundColor = ConsoleColor.Black;
                     Console.BackgroundColor = ConsoleColor.Yellow;
                     break;
                 case "S":
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.DarkRed;
                     break;
                 case "~":
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Blue;
                     break;
                 case "G":
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Green;
                     break;
 
