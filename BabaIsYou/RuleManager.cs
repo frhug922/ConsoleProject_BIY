@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     public class RuleManager {
-        #region static fields
+        #region Singleton
 
         private static RuleManager _instance = null;
 
@@ -22,7 +22,7 @@ namespace BabaIsYou {
             _instance = this;
         }
 
-        #endregion // static fields
+        #endregion // Singleton
 
 
 

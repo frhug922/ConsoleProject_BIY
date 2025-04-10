@@ -78,10 +78,12 @@ namespace BabaIsYou {
                 // 메뉴 출력
                 for (int i = 0; i < options.Length; i++) {
                     Console.SetCursorPosition(5, stages.Length + 4 + i);
-                    if (i == selectedIndex)
+                    if (i == selectedIndex) {
                         Console.Write("▶ " + options[i]);
-                    else
+                    }
+                    else {
                         Console.Write("  " + options[i]);
+                    }
                 }
 
                 // 입력 처리

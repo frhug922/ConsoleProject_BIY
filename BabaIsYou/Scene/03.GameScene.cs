@@ -89,6 +89,13 @@ namespace BabaIsYou {
         #region private funcs
 
         private void LoadMap() {
+            if (int.TryParse(stageNumber, out int stage)) {
+                gameMap = new GameMap(stage, PrintClear, PrintGameOver);
+            }
+            else {
+                throw new ArgumentException("Invalid stage number");
+            }
+
             //if (stageNumber == "01") {
             //    gameMap = new GameMap(1, PrintClear, PrintGameOver);
             //}
@@ -110,12 +117,6 @@ namespace BabaIsYou {
             //else {
             //    throw new ArgumentException("Invalid stage number");
             //}
-            if (int.TryParse(stageNumber, out int stage)) {
-                gameMap = new GameMap(stage, PrintClear, PrintGameOver);
-            }
-            else {
-                throw new ArgumentException("Invalid stage number");
-            }
         }
 
         private void ClearMessage() {
@@ -134,10 +135,12 @@ namespace BabaIsYou {
                 Console.Write("정말로 다시 시작하시겠습니까?");
                 for (int i = 0; i < options.Length; i++) {
                     Console.SetCursorPosition(5, gameMap.Map.GetLength(1) + 4 + i);
-                    if (i == selectedIndex)
+                    if (i == selectedIndex) {
                         Console.Write("▶ " + options[i]);
-                    else
+                    }
+                    else {
                         Console.Write("  " + options[i]);
+                    }
                 }
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 switch (key.Key) {
@@ -167,10 +170,12 @@ namespace BabaIsYou {
 
                 for (int i = 0; i < options.Length; i++) {
                     Console.SetCursorPosition(5, gameMap.Map.GetLength(1) + 4 + i);
-                    if (i == selectedIndex)
+                    if (i == selectedIndex) {
                         Console.Write("▶ " + options[i]);
-                    else
+                    }
+                    else {
                         Console.Write("  " + options[i]);
+                    }
                 }
 
                 ConsoleKeyInfo key = Console.ReadKey(true);

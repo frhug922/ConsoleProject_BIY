@@ -13,11 +13,20 @@ namespace BabaIsYou {
     }
 
     public class Tile {
+        #region Properties
+
         public TileType TileType { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public string Name { get; set; } // 타일의 이름 (예: "ROCK", "BABA", "WALL")
-        public bool IsPushable { get; set; }
+
+        #endregion // Properties
+
+
+
+
+
+        #region Constructors
 
         public Tile(TileType tileType, int x, int y, string name) {
             TileType = tileType;
@@ -33,10 +42,20 @@ namespace BabaIsYou {
             Y = other.Y;
         }
 
+        #endregion // Constructors
+
+
+
+
+
+        #region public funcs
+
         public void SetPosition(int newX, int newY) {
             this.X = newX;
             this.Y = newY;
         }
+
+        #endregion // public funcs
     }
 }
 

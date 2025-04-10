@@ -9,7 +9,6 @@ namespace BabaIsYou {
         public static void SetConsoleColor(string objectName) {
             switch (objectName) {
                 #region Subjects
-
                 case "BABA":
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.Magenta;
@@ -38,7 +37,7 @@ namespace BabaIsYou {
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.Green;
                     break;
-
+                ///////////////////////////////////////////////////
                 case "B":
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Magenta;
@@ -67,7 +66,6 @@ namespace BabaIsYou {
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Green;
                     break;
-
                 #endregion // Subjects
 
                 case "IS":
@@ -76,7 +74,6 @@ namespace BabaIsYou {
                     break;
 
                 #region Attributes
-
                 case "YOU":
                     Console.BackgroundColor = ConsoleColor.Magenta;
                     Console.ForegroundColor = ConsoleColor.Black;
@@ -101,7 +98,6 @@ namespace BabaIsYou {
                     Console.BackgroundColor = ConsoleColor.DarkRed;
                     Console.ForegroundColor = ConsoleColor.Black;
                     break;
-
                 #endregion // Attributes
 
                 default:

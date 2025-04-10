@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BabaIsYou {
     class GameManager {
-        #region static fields
+        #region Singleton
 
         private static GameManager _instance = null;
 
@@ -23,7 +23,7 @@ namespace BabaIsYou {
             _instance = this;
         }
 
-        #endregion // static fields
+        #endregion // Singleton
 
 
 
